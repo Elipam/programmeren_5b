@@ -1,73 +1,59 @@
 #include <iostream>
-#include <stdio.h>
-#include <math.h>
+#include <cmath>
+#include <array>
 
 int main()
 {
-    // Making variables for the board and circle.
-    int boardWidth = 300;
-    int boardHeight = 100;
+    // Constants for board and circle dimensions
+    const int boardWidth = 300;
+    const int boardHeight = 100;
 
-    int middleX = boardWidth / 2;
-    int middleY = boardHeight / 2;
+    const int middleX = boardWidth / 2;
+    const int middleY = boardHeight / 2;
 
-    float tileWidthX = 20;
-    float tileWidthY = 8;
+    const float tileWidthX = 20;
+    const float tileWidthY = 8;
 
-    double outerRadius = 80.0;
-    double innerRadius = 40.0;
+    const double outerRadius = 80.0;
+    const double innerRadius = 40.0;
 
-    // character is the character that will be printed and is determined by the distance from the center of the circle and the chessboard pattern.
-    int character = 0;
+    // Characters to be printed
+    std::array<char, 3> chars = {' ', 'L', 'N'};
 
-    char chars[] = {' ', 'L', 'N'};
-
-    // The switcher is used to switch from blank tile to filled tile.
+    // Switcher to toggle the chessboard pattern
     int switcher = 0;
     int num;
     int num2;
 
-    // Loop for the Y axis and switching the switcher so the board becomes a chessboard pattern.
+    // Loop for the Y axis to generate rows
     for (int countY = 0; countY < boardHeight; countY++)
     {
-        num = floor(countY / tileWidthY);
-        if (num % 2 == 0)
-        {
-            switcher = 1;
-        }
-        else
-        {
-            switcher = 0;
-        }
-        // Loop for the X axis and calculating the distance from the center of the circle so the right character can be printed.
+        num = std::floor(countY / tileWidthY);
+        switcher = (num % 2 == 0) ? 1 : 0;
+
+        // Loop for the X axis to generate columns
         for (int countX = 0; countX < boardWidth; countX++)
         {
-            character = 0;
-            num2 = floor(countX / tileWidthX) + switcher;
+            int character = 0;
+            num2 = std::floor(countX / tileWidthX) + switcher;
             if (num2 % 2 == 0)
             {
-                character = character + 1;
+                character += 1;
             }
+
+            // Calculate the distance from the center using Pythagoras
             float pythagoras = std::sqrt((countX - middleX) * (countX - middleX) + 5 * (countY - middleY) * (countY - middleY));
             if (pythagoras <= outerRadius && pythagoras >= innerRadius)
             {
-                character = character + 1;
+                character += 1;
             }
 
-            if (character == 0)
-            {
-                printf("%c", chars[0]);
-            }
-            else if (character == 1)
-            {
-                printf("%c", chars[1]);
-            }
-            else if (character == 2)
-            {
-                printf("%c", chars[2]);
-            }
+            // Output the corresponding character
+            std::cout << chars[character];
         }
-        printf("\n");
+        // Newline at the end of each row
+        std::cout << std::endl;
     }
+
     return 0;
 }
