@@ -12,7 +12,7 @@ int main()
     const int middleY = boardHeight / 2;
 
     const float tileWidthX = 20;
-    const float tileWidthY = 8;
+    const float tileWidthY = 7;
 
     const double outerRadius = 80.0;
     const double innerRadius = 40.0;
