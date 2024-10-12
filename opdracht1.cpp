@@ -1,10 +1,16 @@
+// Requirements:
+// Draw a chessboard pattern with 2 nested loops.
+// Draw a circle with a hole in the middle on the chessboard pattern.
+// Make sure the right characters are printed on the right places.
+// Put constant numbers in constant variables.
+
 #include <iostream>
 #include <cmath>
 #include <array>
 
 int main()
 {
-    // Constants for board and circle dimensions
+    // Constant variables for board and circle dimensions
     const int boardWidth = 300;
     const int boardHeight = 100;
 
@@ -42,7 +48,7 @@ int main()
             }
 
             // Calculate the distance from the center using Pythagoras
-            float pythagoras = std::sqrt((countX - middleX) * (countX - middleX) + 5 * (countY - middleY) * (countY - middleY));
+            float pythagoras = std::sqrt((countX - middleX) * (countX - middleX) + 7 * (countY - middleY) * (countY - middleY));
             if (pythagoras <= outerRadius && pythagoras >= innerRadius)
             {
                 character += 1;
