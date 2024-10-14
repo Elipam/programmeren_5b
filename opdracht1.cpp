@@ -4,6 +4,16 @@
 // Make sure the right characters are printed on the right places.
 // Put constant numbers in constant variables.
 
+// Testspecs:
+// Testing the chessboard pattern by removing the cirkel character counter
+// Testing the chessboard pattern by removing the chessboard pattern counter
+// Testing the combination of the chessboard pattern and the cirkel character counter if they are working together
+
+// Design:
+// For the making of the chessboard, I chose to just print characters and calibrate to make the sqaures the right size.
+// To make the squares alter form black to white on the vertical axis, I used a switcher that toggles between 0 and 1.
+// For the circle, I used the Pythagorean theorem to calculate the distance from the center of the circle.
+
 #include <iostream>
 #include <cmath>
 #include <array>
