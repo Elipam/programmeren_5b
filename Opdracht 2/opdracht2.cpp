@@ -31,7 +31,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <string>
 
 namespace st = std;
 const int square = 2;
@@ -40,7 +39,7 @@ const int square = 2;
 struct Vec3D {float x, y, z;};
 
 // Function to create a vector
- Vec3D vec3D (float x, float y, float z) {
+Vec3D vec3D (float x, float y, float z) {
     return Vec3D{x, y, z};
 }
 
