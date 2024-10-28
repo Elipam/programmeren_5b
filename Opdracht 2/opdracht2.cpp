@@ -82,7 +82,7 @@ Vec3D mul (Vec3D const &self, float scalar) {
 // Function to divide a vector by a scalar
 Vec3D div (Vec3D const &self, float scalar) {
     if (scalar == 0) {
-        std::cerr << "Error: Division by zero impossible.\n";
+        std::cerr << "Division by zero impossible.\n";
         return self;
     }
     return Vec3D{self.x / scalar, self.y / scalar, self.z / scalar};
@@ -97,7 +97,7 @@ float norm (Vec3D const &self) {
 Vec3D unit (Vec3D const &self) {
     float length = norm(self);
     if (length == 0) {
-        std::cerr << "Error: Cannot normalize a zero-length vector.\n";
+        std::cerr << "Cannot normalize a zero-length vector.\n";
         return self;
     }
     return div(self, length);
@@ -154,7 +154,7 @@ int main () {
     show("v_div = v1 / 2.0", v_div);
 
     Vec3D v_div_zero = div(v1, 0);
-    show("v_div_zero = v1 / 0", v_div_zero);
+    show("v_div_zero impssible, gives back vector", v_div_zero);
 
     Vec3D v_unit = unit(v1);
     show("v_unit = Unit vector of v1", v_unit);
