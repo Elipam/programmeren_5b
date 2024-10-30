@@ -1,135 +1,219 @@
+// Requirements:
+// 1. Copy the Vec3D class from opdracht2 and paste it into the code editor.
+// 2. Make a ray class that has a support vector and a direction vector.
+// 3. Make a sphere class that has a center, a radius and is able to calculate the intersection point of a ray with the sphere.
+// 4. Make a main function that creates a list of spheres and a list of rays and tests each ray against each sphere.
+
+// Testspecs:
+// 1. Test if the copied Vec3D class works correctly.
+// 2.a Test if the ray class and sphere class work correctly by testing if a ray hits a sphere and if the intersection point is calculated correctly.
+// 2.b Compare the intersection point with the test images made in desmos.
+// 3. Test if disFromRay function works correctly by comparing the result with the radius of the sphere.
+
+// Design:
+// The program is designed to by using simple math functions to calculate the properties of a 3D vector.
+// A struct is used to define the vector, because it is a simple way to store the x, y and z components.
+// The function definitions were already given in the assignment, so I only had to implement them and add the necessary code.
+// Ruling out division by zero is done by checking if the scalar is zero before dividing.
+
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include 
 
-// Vec3D class: Represents a 3D vector
+namespace st = std;
+const int square = 2;
+
+// Vec3D class: Represents a 3D vector and its operations
 class Vec3D {
-public:
-    float x, y, z;
+    public:
+        float x, y, z;
 
-    // Constructor
-    Vec3D(float x, float y, float z) : x(x), y(y), z(z) {}
+        // Constructor declaration
+        Vec3D(float x, float y, float z) : x(x), y(y), z(z) {}
 
-    // Methods for vector operations
-    Vec3D add(const Vec3D& other) const {
-        return Vec3D(x + other.x, y + other.y, z + other.z);
+
+    // Function to display a vector with a label
+    void show (st::string label) {
+        std::cout << label << "(" << x << ", " << y << ", " << z << ")\n";
     }
 
-    Vec3D sub(const Vec3D& other) const {
-        return Vec3D(x - other.x, y - other.y, z - other.z);
+    // Function to display a vector property with a label
+    void show (st::string label, float scalar)  {
+        std::cout << label << ": " << scalar << "\n";
     }
 
-    Vec3D mul(float scalar) const {
-        return Vec3D(x * scalar, y * scalar, z * scalar);
+    // Function to return the opposite direction of a vector
+    Vec3D minus () const {
+        return Vec3D{x, y, z};
     }
 
-    float norm() const {
-        return std::sqrt(x * x + y * y + z * z);
+    float minus2 (float scalar) {
+        return -scalar;
     }
 
-    Vec3D unit() const {
-        float length = norm();
-        if (length == 0.0f) {
-            std::cerr << "Error: Cannot normalize a zero-length vector.\n";
-            return *this; // Return original vector as fallback
+    // Function to add two vectors
+    Vec3D add (Vec3D const &self) const {
+        return Vec3D{x + self.x, y + self.y, z + self.z};
+    }
+
+    // Function to subtract two vectors
+    Vec3D sub (Vec3D const &other) const {
+        return Vec3D{x - other.x, y - other.y, z - other.z};
+    }
+
+    // Function to multiply a vector by a scalar
+    Vec3D mul (float scalar) const {
+        return Vec3D{x * scalar, y * scalar, z * scalar};
+    }
+
+    // Function to divide a vector by a scalar
+    Vec3D div (float scalar) const {
+        if (scalar == 0) {
+            st::cerr << "Division by zero impossible.\n";
+            return Vec3D{x, y, z};
         }
-        return mul(1.0f / length);
+        return Vec3D{x / scalar, y / scalar, z / scalar};
     }
 
-    float dot(const Vec3D& other) const {
+    // Function to calculate the norm (length) of a Vec3D
+    float norm () const {
+        return st::sqrt(x * x + y * y + z * z);
+    }
+
+    // Function to normalize a Vec3D (unit vector)
+    Vec3D unit () const{
+        float length = this->norm();
+        if (length == 0) {
+            st::cerr << "Cannot normalize a zero-length vector.\n";
+            return Vec3D{x, y, z};
+        }
+        return div(length);
+    }
+
+    // Function to calculate the dot product of two Vec3D vectors
+    float dot (Vec3D const &other) const {
         return x * other.x + y * other.y + z * other.z;
     }
 
-    Vec3D cross(const Vec3D& other) const {
-        return Vec3D(
+    // Function to calculate the cross product of two Vec3D vectors
+    Vec3D cross (Vec3D const &other) const {
+        return Vec3D{
             y * other.z - z * other.y,
             z * other.x - x * other.z,
             x * other.y - y * other.x
-        );
-    }
-
-    // Display the vector
-    void show(const std::string& label) const {
-        std::cout << label << ": (" << x << ", " << y << ", " << z << ")\n";
+        };
     }
 };
 
 // Ray class: Represents a ray with a support vector and a direction vector
 class Ray {
-public:
-    Vec3D support;
-    Vec3D direction;
+    public:
+        Vec3D support;
+        Vec3D direction;
 
-    // Constructor
-    Ray(float xSup, float ySup, float zSup, float xDir, float yDir, float zDir)
-        : support(xSup, ySup, zSup), direction(xDir, yDir, zDir) {}
+        // Constructor
+        Ray(float xSup, float ySup, float zSup, float xDir, float yDir, float zDir) : support(xSup, ySup, zSup), direction(xDir, yDir, zDir) {}
 };
 
-// Sphere class: Represents a sphere with a center and a radius
+// 
 class Sphere {
-public:
-    Vec3D center;
-    float radius;
+    public:
+        Vec3D center;
+        float radius;
+        // Constructor
+        Sphere(float x, float y, float z, float radius) : center(x, y, z), radius(radius) {}
 
-    // Constructor
-    Sphere(float x, float y, float z, float radius)
-        : center(x, y, z), radius(radius) {}
-
-    // Calculate distance from the ray to the center of the sphere
-    float distFromRay(const Ray& ray) const {
-        Vec3D oc = ray.support.sub(center);
-        Vec3D d = ray.direction.unit();
-        Vec3D oc_proj = oc.sub(d.mul(oc.dot(d)));
-        return oc_proj.norm();
+    // Closest distance from the ray to the sphere center, but not the angle
+    float distFromRay (Ray const &ray) const {
+        return ray.support.sub(center).cross(ray.direction).norm()/(ray.direction.norm());
     }
 
     // Check if the ray hits the sphere
-    bool hit(const Ray& ray) const {
-        return distFromRay(ray) <= radius;
+    bool hit (Ray const &ray) const{
+        if (distFromRay(ray) < radius)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    // Calculate the hit point of the ray with the sphere
     Vec3D hitPoint(const Ray& ray) const {
-        if (!hit(ray)) {
-            std::cerr << "Ray does not hit the sphere.\n";
-            return Vec3D(0.0f, 0.0f, 0.0f);
+        bool hit = this->hit(ray);
+        if (hit == false) {
+            st::cerr << "Ray does not hit the sphere.\n";
+            return Vec3D(0, 0, 0);
         }
-        Vec3D oc = ray.support.sub(center);
-        float t = -oc.dot(ray.direction.unit());
-        return ray.support.add(ray.direction.unit().mul(t));
+        else {
+            Vec3D centerToSupport = ray.support.sub(center);
+            // a = dir * dir
+            float a = ray.direction.dot(ray.direction);
+            // b = 2 * dir * (sup - center)
+            float b = 2 * centerToSupport.dot(ray.direction);
+            // c = (sup - center) * (sup - center) - r^2
+            float c = centerToSupport.dot(centerToSupport) - radius * radius;
+
+            float d = b * b - 4 * a * c;
+
+            float t1 = (-b - sqrt(d)) / (2 * a);
+            float t2 = (-b + sqrt(d)) / (2 * a);
+            float t = t1 < t2 ? t1 : t2;
+            return ray.support.add(ray.direction.mul(t));
+        }
+        
+        
     }
 };
 
-// Main function to test the classes
-int main() {
-    // Create a list of spheres
+int main()
+{
+    // Test the Vec3D class
+    Vec3D v1(1, 2, 3);
+    Vec3D v2(4, 5, 6);
+    Vec3D v7(5, 5, 5);
+    Vec3D v3 = v1.sub(v2);
+    v3.show("v1 - v2 = ");
+    Vec3D v4 = v1.div(2);
+    v4.show("v1 / 2 = ");
+    Vec3D v5 = v1.unit();
+    v5.show("unit vector of v1", v5.norm());
+    Vec3D v6 = v1.cross(v2);
+    v6.show("v1 cross v2 = ");
+
+    // Test the Sphere class
+    Sphere testSphere(0, 0, 0, 2);
+    Ray testRay(-3, -3, -3, 2, 2, 1);
+    testSphere.hitPoint(testRay).show("hit point: ");
+    st::cout << testSphere.distFromRay(testRay),"\n";
+
+
+    int far = 1000;
+    // Create a vector of Sphere objects
     std::vector<Sphere> spheres = {
         Sphere(-0.4, 0.23, -1, 0.4),
         Sphere(0.4, 0.4, -1.2, 0.3),
         Sphere(0.7, -0.15, -1.5, 0.2)
     };
 
-    // Create a list of rays
-    float far = 1000.0f; // Arbitrary large value for the ray's distance
+    // Create a vector of Ray objects
     std::vector<Ray> rays = {
         Ray(-far, 0.23, -1, far, 0, 0),
         Ray(0.4, -far, -1.2, 0, far, 0),
         Ray(0.7, -0.15, -far, 0, 0, far)
     };
-
-    // Test each ray with each sphere
-    for (const auto& ray : rays) {
-        for (const auto& sphere : spheres) {
+    // Test each ray against each sphere
+    for (size_t i = 0; i < rays.size(); ++i) {
+        const Ray ray = rays[i];
+        for (size_t j = 0; j < spheres.size(); ++j) {
+            const Sphere sphere = spheres[j];
             if (sphere.hit(ray)) {
-                Vec3D point = sphere.hitPoint(ray);
-                point.show("Hit Point");
-            } else {
-                std::cout << "No hit detected.\n";
+                st::cout << "Ray " << i << " hits Sphere " << j << ", ";
+                Vec3D intersect = sphere.hitPoint(ray);
+                intersect.show("hit point:");
             }
         }
-        std::cout << "\n";
     }
 
-    return 0;
 }

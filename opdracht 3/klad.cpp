@@ -6,7 +6,9 @@
 
 // Testspecs:
 // 1. Test if the copied Vec3D class works correctly.
-// 2. Test if the ray class works correctly. by making
+// 2.a Test if the ray class and sphere class work correctly by testing if a ray hits a sphere and if the intersection point is calculated correctly.
+// 2.b Compare the intersection point with the test images made in desmos.
+// 3. Test if disFromRay function works correctly by comparing the result with the radius of the sphere.
 
 // Design:
 // The program is designed to by using simple math functions to calculate the properties of a 3D vector.
@@ -40,14 +42,9 @@ class Vec3D {
         std::cout << label << ": " << scalar << "\n";
     }
 
-    // Function to print a newline
-    void show () {
-        std::cout << "\n";
-    }
-
     // Function to return the opposite direction of a vector
-    Vec3D minus (Vec3D const &self) {
-        return Vec3D{-self.x, -self.y, -self.z};
+    Vec3D minus () const {
+        return Vec3D{x, y, z};
     }
 
     float minus2 (float scalar) {
@@ -128,49 +125,69 @@ class Sphere {
 
     // Closest distance from the ray to the sphere center, but not the angle
     float distFromRay (Ray const &ray) const {
-        return ray.support.sub(center).cross(ray.direction).norm();
+        return ray.support.sub(center).cross(ray.direction).norm()/(ray.direction.norm());
     }
 
     // Check if the ray hits the sphere
     bool hit (Ray const &ray) const{
-        return distFromRay(ray) < radius;
+        if (distFromRay(ray) < radius)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     Vec3D hitPoint(const Ray& ray) const {
-        Vec3D centerToSupport = ray.support.sub(center);
-        float a = ray.direction.dot(ray.direction);
-        float b = 2 * centerToSupport.dot(ray.direction);
-        float c = centerToSupport.dot(centerToSupport) - radius * radius;
-
-        float d = b * b - 4 * a * c;
-        if (d < 0) {
-            return Vec3D(0, 0, 0);  
+        bool hit = this->hit(ray);
+        if (hit == false) {
+            st::cerr << "Ray does not hit the sphere.\n";
+            return Vec3D(0, 0, 0);
         }
+        else {
+            Vec3D centerToSupport = ray.support.sub(center);
+            // a = dir * dir
+            float a = ray.direction.dot(ray.direction);
+            // b = 2 * dir * (sup - center)
+            float b = 2 * centerToSupport.dot(ray.direction);
+            // c = (sup - center) * (sup - center) - r^2
+            float c = centerToSupport.dot(centerToSupport) - radius * radius;
 
-        float t1 = (-b - sqrt(d)) / (2 * a);
-        float t2 = (-b + sqrt(d)) / (2 * a);
-        st::cout << "t1: " << t1 << ", t2: " << t2 << "\n";
-        float t = t1 < t2 ? t1 : t2;
-        return ray.support.add(ray.direction.unit().mul(t));
+            float d = b * b - 4 * a * c;
+
+            float t1 = (-b - sqrt(d)) / (2 * a);
+            float t2 = (-b + sqrt(d)) / (2 * a);
+            float t = t1 < t2 ? t1 : t2;
+            return ray.support.add(ray.direction.mul(t));
+        }
+        
+        
     }
 };
 
 int main()
 {
+    // Test the Vec3D class
     Vec3D v1(1, 2, 3);
     Vec3D v2(4, 5, 6);
+    Vec3D v7(5, 5, 5);
     Vec3D v3 = v1.sub(v2);
     v3.show("v1 - v2 = ");
     Vec3D v4 = v1.div(2);
     v4.show("v1 / 2 = ");
     Vec3D v5 = v1.unit();
-    v5.show("unit vector of v1 = ", v5.norm());
+    v5.show("unit vector of v1", v5.norm());
     Vec3D v6 = v1.cross(v2);
     v6.show("v1 cross v2 = ");
 
+    // Test the Sphere class
     Sphere testSphere(0, 0, 0, 2);
     Ray testRay(-3, -3, -3, 2, 2, 1);
     testSphere.hitPoint(testRay).show("hit point: ");
+    st::cout << testSphere.distFromRay(testRay);
+
 
     int far = 1000;
     // Create a vector of Sphere objects
