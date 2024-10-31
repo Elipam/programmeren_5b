@@ -115,7 +115,7 @@ void renderScene(const std::vector<Object*>& objects, int width, int height) {
                 float t;
                 if (obj->hit(ray, t) && t < closest_t) {
                     closest_t = t;
-                    pixel = '#';
+                    pixel = 'M';
                 }
             }
             std::cout << pixel;
