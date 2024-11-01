@@ -157,8 +157,7 @@ int main()
     const int middleX = boardWidth / 2;
     const int middleY = boardHeight / 2;
 
-    const float tileWidthX = 20;
-    const float horizon = 50;
+    const float horizon = 70;
 
     const double outerRadius = 80.0;
     const double innerRadius = 40.0;
@@ -168,44 +167,60 @@ int main()
 
     // Switcher to toggle the chessboard pattern
     float tileHeight = 1;
+    float tileWidth = 1;
     int switcher = 0;
     int lastSwitcher = 1;
     int count2Y = 0;
+    float count2X = 0;
     int num;
     int num2;
 
     // Loop for the Y axis to generate rows
     for (int countY = 0; countY < boardHeight; countY++)
     {
-        num = std::floor(countY / tileHeight);
-        switcher = (num % 2 == 0) ? 1 : 0;
+        if (countY > horizon)
+        {
+            count2Y += 1;
 
-        // tileHeight begint 1
-        // switch tile height = 1
-        // 
+            if (st::floor(tileHeight) == count2Y)
+            {
+                switcher = 1 - lastSwitcher;
+                lastSwitcher = switcher;
+                count2Y = 0;
+                tileHeight = tileHeight + 1.0/3.0;
+            }
+        }
 
-        // Loop for the X axis to generate columns
         for (int countX = 0; countX < boardWidth; countX++)
         {
+            count2X += 1.0;   
             int character = 0;
-            num2 = std::floor(countX / tileWidthX) + switcher;
-            if (num2 % 2 == 0 && countY > horizon)
+            num2 = static_cast<int>(st::floor(count2X / tileWidth)) % 2;
+            if (num2 != switcher && countY > horizon)
             {
                 character += 1;
+                if (countX < middleX)
+                {
+                    tileWidth = tileWidth - 1.0/3.0;
+                }
+                else if (countX > middleX)
+                {
+                    tileWidth = tileWidth + 1.0/3.0;
+                }
             }
 
             // Calculate the distance from the center using Pythagoras
-            float pythagoras = std::sqrt((countX - middleX) * (countX - middleX) + 7 * (countY - middleY) * (countY - middleY));
-            if (pythagoras <= outerRadius && pythagoras >= innerRadius)
-            {
-                character += 1;
-            }
+            // float pythagoras = st::sqrt((countX - middleX) * (countX - middleX) + 7 * (countY - middleY) * (countY - middleY));
+            // if (pythagoras <= outerRadius && pythagoras >= innerRadius)
+            // {
+            //     character += 1;
+            // }
 
             // Output the corresponding character
-            std::cout << chars[character];
+            st::cout << chars[character];
         }
         // Newline at the end of each row
-        std::cout << std::endl;
+        st::cout << st::endl;
     }
 
     return 0;

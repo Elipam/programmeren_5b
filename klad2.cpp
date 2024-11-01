@@ -18,17 +18,29 @@
 #include <cmath>
 #include <array>
 
+float calcTileWidth(int center, int current) {
+    float tileWidth;
+    float diff = center - current;
+    if (current < 0)
+    {
+        current = -current;
+    }
+    
+    return tileWidth = diff * ;
+}
+
 int main()
 {
     // Constant variables for board and circle dimensions
     const int boardWidth = 300;
     const int boardHeight = 100;
+    const int horizon = -1;
 
     const int middleX = boardWidth / 2;
     const int middleY = boardHeight / 2;
 
-    const float tileWidthX = 20;
-    const float tileHeight = 7;
+    const float tileWidth = 20;
+    float tileHeight = 7;
 
     const double outerRadius = 80.0;
     const double innerRadius = 40.0;
@@ -37,39 +49,40 @@ int main()
     std::array<char, 3> chars = {' ', 'L', 'N'};
 
     // Switcher to toggle the chessboard pattern
+    bool boolX = false;
+    bool boolY = false;
+    bool lastBoolY = true;
     int switcher = 0;
-    int num;
+    int num = -1;
+    int lastNum;
+    int count2Y = 0;
     int num2;
 
     // Loop for the Y axis to generate rows
-    for (int countY = 0; countY < boardHeight; countY++)
+    for (int i = 0; i < boardHeight; i++)
     {
-        num = std::floor(countY / tileHeight);
-        switcher = (num % 2 == 0) ? 1 : 0;
-
-        // Loop for the X axis to generate columns
-        for (int countX = 0; countX < boardWidth; countX++)
+        for (int j = 0; i < tileHeight; j++)
         {
-            int character = 0;
-            num2 = std::floor(countX / tileWidthX) + switcher;
-            if (num2 % 2 == 0)
+            for (int k = 0; k < boardWidth; k++)
             {
-                character += 1;
+                for (int l = 0; l < tileWidth; l++)
+                {
+                    if (i > horizon)
+                    {
+                        
+                    }
+                    {
+                        /* code */
+                    }
+                    
+                }
+                
             }
-
-            // Calculate the distance from the center using Pythagoras
-            float pythagoras = std::sqrt((countX - middleX) * (countX - middleX) + 7 * (countY - middleY) * (countY - middleY));
-            if (pythagoras <= outerRadius && pythagoras >= innerRadius)
-            {
-                character += 1;
-            }
-
-            // Output the corresponding character
-            std::cout << chars[character];
+            
         }
-        // Newline at the end of each row
-        std::cout << std::endl;
+        
     }
+    
 
     return 0;
 }
