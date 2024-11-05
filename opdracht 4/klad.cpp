@@ -166,8 +166,8 @@ int main()
     std::array<char, 3> chars = {' ', 'L', 'N'};
 
     // Switcher to toggle the chessboard pattern
-    float tileHeight = 1;
-    float tileWidth = 1;
+    float tileHeight = 7;
+    float tileWidth = 20;
     int switcher = 0;
     int lastSwitcher = 1;
     int count2Y = 0;
@@ -175,52 +175,31 @@ int main()
     int num;
     int num2;
 
-    // Loop for the Y axis to generate rows
-    for (int countY = 0; countY < boardHeight; countY++)
-    {
-        if (countY > horizon)
-        {
-            count2Y += 1;
-
-            if (st::floor(tileHeight) == count2Y)
-            {
-                switcher = 1 - lastSwitcher;
-                lastSwitcher = switcher;
-                count2Y = 0;
-                tileHeight = tileHeight + 1.0/3.0;
-            }
-        }
-
-        for (int countX = 0; countX < boardWidth; countX++)
-        {
-            count2X += 1.0;   
-            int character = 0;
-            num2 = static_cast<int>(st::floor(count2X / tileWidth)) % 2;
-            if (num2 != switcher && countY > horizon)
-            {
-                character += 1;
-                if (countX < middleX)
-                {
-                    tileWidth = tileWidth - 1.0/3.0;
-                }
-                else if (countX > middleX)
-                {
-                    tileWidth = tileWidth + 1.0/3.0;
-                }
+    // print y line
+    for (int i = 0; i <= boardHeight; ++i) {
+        switcher++;
+        if (i < horizon){
+            st::cout << chars[0];
+        } 
+        else if (i >= horizon) {
+            // ptint y tile
+            for (int j = 0; j < tileHeight; j++) {
+                switcher++;
+                i++;
+                // print x line
+                for (int k = 0; k <= boardWidth; k++) {
+                    switcher = (switcher + 1) % 2;
+                    // print x tile
+                    for (int l = 0; l < tileWidth; l++) {
+                        std::cout << chars[switcher];
+                        k++;
+                    }
+                } 
+                st::cout << st::endl;
             }
 
-            // Calculate the distance from the center using Pythagoras
-            // float pythagoras = st::sqrt((countX - middleX) * (countX - middleX) + 7 * (countY - middleY) * (countY - middleY));
-            // if (pythagoras <= outerRadius && pythagoras >= innerRadius)
-            // {
-            //     character += 1;
-            // }
-
-            // Output the corresponding character
-            st::cout << chars[character];
         }
-        // Newline at the end of each row
-        st::cout << st::endl;
+        
     }
 
     return 0;
