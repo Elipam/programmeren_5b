@@ -111,7 +111,6 @@ Vec3D endPointD(-4, -2, zVoid);
 int amountRaysX = 80;
 int amountRaysY = 40;
 
-
 // Forward declaration of Ray class
 class Ray;
 
@@ -131,9 +130,8 @@ public:
     virtual ~Object() = default;
 };
 
-using VPO = vector<Object*>;
+using VPO = vector<Object *>;
 
-// Extended Ray class
 class Ray
 {
 public:
@@ -143,12 +141,38 @@ public:
 
     // Constructor
     Ray(float xStart, float yStart, VPO &objects)
-        : support(0, 0, -3), direction(0, 0, 0), objects(objects) {}
+        : support(xStart, yStart, -3), direction(0, 0, 0), objects(objects) {}
 
     // Scan method
     bool scan()
     {
         return true;
+    }
+
+    void printChar(float curX, float curY, float stepsX, float stepsY)
+    {
+        bool hitSomething = false;
+        for (const auto &obj : objects)
+        {
+            if (obj->hit(*this))
+            {
+                hitSomething = true;
+                break;
+            }
+        }
+
+        if (hitSomething)
+        {
+            cout << "X";
+        }
+        else
+        {
+            cout << " ";
+        }
+        if (curX >= stepsX)
+        {
+            cout << "\n";
+        }
     }
 };
 
@@ -159,18 +183,31 @@ public:
 
     Sphere(float x, float y, float z, float radius) : Object(x, y, z), radius(radius) {}
 
-    bool hit(Ray &ray)
+    float distFromRay(Ray const &ray) const
     {
-        return true;
+        return ray.support.sub(center).cross(ray.direction).norm() / (ray.direction.norm());
+    }
+
+    bool hit(Ray &ray) override
+    {
+        if (distFromRay(ray) < radius)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 };
 
 class Floor : public Object
 {
 public:
-    Floor(float x, float y) : Object(x, y, 0) {}
+    Floor(float x, float z) : Object(x, 0, z) {}
 
-    bool isEven (int num) {
+    bool isEven(int num)
+    {
         if (num % 2 == 0)
         {
             return true;
@@ -178,43 +215,50 @@ public:
         else
         {
             return false;
-        }   
-    }
-    bool hit(Ray &ray)
-    {
-        if ()
-        {
-            /* code */
         }
-        
-        return true;
+    }
+    bool hit(Ray &ray) override
+    {
+        float t = (0 - ray.support.y) / ray.direction.y;
+        Vec3D hitPoint = ray.support.add(ray.direction.mul(t));
+        if (isEven(floor(hitPoint.x) + floor(hitPoint.z)))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 };
 
-class RayScanner {
-        VPO objects{
-            new Floor(1,1),
-            new Sphere(-1.5, 0.8, 2.0, 0.8),
-            new Sphere(2.0, 0.3, 2.0, 0.3),
-            new Sphere(0.5, 1.0, 2.0, 0.5)
-        };
-        void scan () {
-        float yStep = (endPointA.y - endPointD.y)/amountRaysY;
-        for (float i = endPointA.y; i >= endPointC.y; i += yStep)        
+class RayScanner
+{
+public:
+    VPO objects{
+        new Floor(1, 1),
+        new Sphere(-1.5, 0.8, 2.0, 0.8),
+        new Sphere(2.0, 0.3, 2.0, 0.3),
+        new Sphere(0.5, 1.0, 2.0, 0.5)};
+    void scan()
+    {
+        float yStep = (endPointA.y - endPointD.y) / amountRaysY;
+        for (float i = endPointA.y; i >= endPointC.y; i += yStep)
         {
-            float xStep = (endPointB.x - endPointA.x)/amountRaysX;
-            for (float j = endPointA.x; j <= endPointB.x; j += xStep)        
+            float xStep = (endPointB.x - endPointA.x) / amountRaysX;
+            for (float j = endPointA.x; j <= endPointB.x; j += xStep)
             {
                 Ray ray(0, 0, objects);
-                ray.direction = 
-            }   
-        } 
-        
+                ray.direction = Vec3D(j, i, zVoid).sub(ray.support).unit();
+                ray.printChar(j, i, endPointB.x, endPointC.y);
+            }
+        }
     }
 };
 
 int main()
 {
-
+    RayScanner scanner;
+    scanner.scan();
     return 0;
 }
