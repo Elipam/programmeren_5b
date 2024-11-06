@@ -200,7 +200,10 @@ public:
 class Floor : public Object
 {
 public:
-    Floor(float x, float z) : Object(x, 0, z) {}
+    float tileSize;
+    float x, y, z;
+
+    Floor(float x, float y, float z, float tileSize) : Object(x, y, z), tileSize(tileSize) {}
 
     bool isEven(int num)
     {
@@ -209,18 +212,18 @@ public:
 
     bool hit(Ray &ray) override
     {
-        float t = (0 - ray.support.y) / ray.direction.y;
-        if (t < 0)
-        {
-            t = minus2(t);
-        }
+        float t = (this->y - ray.support.y) / ray.direction.y;
         Vec3D hitPoint = ray.support.add(ray.direction.mul(t));
-        if (hitPoint.z > 3)
+
+        if (ray.direction.y >= 0 || hitPoint.z > 3)
         {
             return false;
         }
 
-        return !isEven(floor(hitPoint.x) + floor(hitPoint.z));
+        int tileX = floor(hitPoint.x / tileSize);
+        int tileZ = floor(hitPoint.z / tileSize);
+
+        return !isEven(tileX + tileZ);
     }
 };
 
@@ -228,7 +231,7 @@ class RayScanner
 {
 public:
     VPO objects{
-        new Floor(1, 1),
+        new Floor(0, -7, 0, 0.5),
         new Sphere(-1.5, 0.8, 2.0, 0.8),
         new Sphere(2.0, 0.3, 2.0, 0.3),
         new Sphere(0.5, 1.0, 2.0, 0.5)};
