@@ -128,7 +128,7 @@ const Vec3D endPointB(6, 3, zVoid);
 const Vec3D endPointC(6, -3, zVoid);
 const Vec3D endPointD(-6, -3, zVoid);
 const int amountRaysX = 120;
-const int amountRaysY = 60;
+const int amountRaysY = 50;
 
 // Forward declaration of Ray class
 class Ray;
@@ -142,8 +142,9 @@ public:
     // Constructor
     Object(float x, float y, float z) : center(x, y, z) {}
 
-    // Pure virtual method
+    // Pure virtual methods
     virtual bool hit(Ray &ray) = 0;
+    virtual Ray bounce(Ray &ray) = 0;
 
     // Virtual destructor
     virtual ~Object() = default;
@@ -170,19 +171,30 @@ public:
         return true;
     }
 
+    float hitSomething = 0;
+
     void printChar()
     {
-        bool hitSomething = false;
+        if (hitSomething >= 2)
+        {
+            cout << "##";
+            return;
+        }
         for (const auto &obj : objects)
         {
             if (obj->hit(*this))
             {
-                hitSomething = true;
-                break;
+                hitSomething++;
+                Ray rayBounce = obj->bounce(*this);
+                rayBounce.printChar();
             }
         }
 
-        if (hitSomething)
+        if (hitSomething >= 2)
+        {
+            cout << "##";
+        }
+        else if (hitSomething == 1)
         {
             cout << "++";
         }
@@ -218,6 +230,44 @@ public:
             return false;
         }
     }
+
+    Vec3D hitPoint(Ray &ray)
+    {
+        bool hit = this->hit(ray);
+        if (hit == false)
+        {
+            cerr << "Ray does not hit the sphere.\n";
+            return Vec3D(0, 0, 0);
+        }
+        else
+        {
+            Vec3D centerToSupport = ray.support.sub(center);
+            // a = dir * dir
+            float a = ray.direction.dot(ray.direction);
+            // b = 2 * dir * (sup - center)
+            float b = 2 * centerToSupport.dot(ray.direction);
+            // c = (sup - center) * (sup - center) - r^2
+            float c = centerToSupport.dot(centerToSupport) - radius * radius;
+
+            float d = b * b - 4 * a * c;
+
+            float t1 = (-b - sqrt(d)) / (2 * a);
+            float t2 = (-b + sqrt(d)) / (2 * a);
+            float t = t1 < t2 ? t1 : t2;
+            return ray.support.add(ray.direction.mul(t));
+        }
+    }
+
+    Ray bounce(Ray &ray)
+    {
+        Vec3D hitPoint = this->hitPoint(ray);
+        Vec3D normal = hitPoint.sub(center).unit();
+        Vec3D reflectedDir = ray.direction.sub(normal.mul(2 * ray.direction.dot(normal))).unit();
+        Ray ray2(0, 0, ray.objects);
+        ray2.direction = reflectedDir;
+        ray2.support = hitPoint;
+        return ray2;
+    }
 };
 
 // Floor class: Represents a floor with a tile size
@@ -251,16 +301,27 @@ public:
 
         return !isEven(tileX + tileZ);
     }
+
+    Ray bounce(Ray &ray)
+    {
+        float t = (this->y - ray.support.y) / ray.direction.y;
+        Vec3D hitPoint = ray.support.add(ray.direction.mul(t));
+        Ray ray2 = Ray(0, 0, ray.objects);
+        ray.direction.z = minus2(ray.direction.z);
+        ray2.direction = ray.direction;
+        ray2.support = hitPoint;
+        return ray2;
+    };
 };
 
 class RayScanner
 {
 public:
     VPO objects{
-        new Floor(0, -7, 0, 0.5),
-        new Sphere(-1.5, 0.8, 2.0, 0.8),
-        new Sphere(2.0, 0.3, 2.0, 0.3),
-        new Sphere(0.5, 1.0, 2.0, 0.5)};
+        new Floor(0, 0, 0, 0.5),
+        new Sphere(-1.5, 1.2, 2.0, 0.8),
+        new Sphere(2.0, 0.7, 2.0, 0.3),
+        new Sphere(0.5, 1.4, 2.0, 0.5)};
 
     // Initialize rays
     void scan()
@@ -273,6 +334,7 @@ public:
             {
                 Ray ray(0, 1, objects);
                 ray.direction = Vec3D(j, i, zVoid).sub(ray.support).unit();
+                ray.hitSomething = 0;
                 ray.printChar();
             }
             cout << "\n";

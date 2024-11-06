@@ -128,7 +128,7 @@ const Vec3D endPointB(6, 3, zVoid);
 const Vec3D endPointC(6, -3, zVoid);
 const Vec3D endPointD(-6, -3, zVoid);
 const int amountRaysX = 120;
-const int amountRaysY = 60;
+const int amountRaysY = 50;
 
 // Forward declaration of Ray class
 class Ray;
