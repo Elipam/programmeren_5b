@@ -2,8 +2,9 @@
 #include <cmath>
 #include <vector>
 #include <array>
+#include <variant>
 
-namespace st = std;
+using namespace std;
 const int square = 2;
 
 // Vec3D class: Represents a 3D vector and its operations
@@ -16,13 +17,13 @@ public:
     Vec3D(float x, float y, float z) : x(x), y(y), z(z) {}
 
     // Function to display a vector with a label
-    void show(st::string label)
+    void show(string label)
     {
         std::cout << label << "(" << x << ", " << y << ", " << z << ")\n";
     }
 
     // Function to display a vector property with a label
-    void show(st::string label, float scalar)
+    void show(string label, float scalar)
     {
         std::cout << label << ": " << scalar << "\n";
     }
@@ -61,7 +62,7 @@ public:
     {
         if (scalar == 0)
         {
-            st::cerr << "Division by zero impossible.\n";
+            cerr << "Division by zero impossible.\n";
             return Vec3D{x, y, z};
         }
         return Vec3D{x / scalar, y / scalar, z / scalar};
@@ -70,7 +71,7 @@ public:
     // Function to calculate the norm (length) of a Vec3D
     float norm() const
     {
-        return st::sqrt(x * x + y * y + z * z);
+        return sqrt(x * x + y * y + z * z);
     }
 
     // Function to normalize a Vec3D (unit vector)
@@ -79,7 +80,7 @@ public:
         float length = this->norm();
         if (length == 0)
         {
-            st::cerr << "Cannot normalize a zero-length vector.\n";
+            cerr << "Cannot normalize a zero-length vector.\n";
             return Vec3D{x, y, z};
         }
         return div(length);
@@ -101,6 +102,16 @@ public:
     }
 };
 
+// Global variables
+float zVoid = 4;
+Vec3D endPointA(-4, 2, zVoid);
+Vec3D endPointB(4, 2, zVoid);
+Vec3D endPointC(4, -2, zVoid);
+Vec3D endPointD(-4, -2, zVoid);
+int amountRaysX = 80;
+int amountRaysY = 40;
+
+
 // Forward declaration of Ray class
 class Ray;
 
@@ -120,8 +131,7 @@ public:
     virtual ~Object() = default;
 };
 
-// VPO definition
-using VPO = std::vector<Object *>;
+using VPO = vector<Object*>;
 
 // Extended Ray class
 class Ray
@@ -133,7 +143,7 @@ public:
 
     // Constructor
     Ray(float xStart, float yStart, VPO &objects)
-        : support(xStart, yStart, 0), direction(0, 0, 0), objects(objects) {}
+        : support(0, 0, -3), direction(0, 0, 0), objects(objects) {}
 
     // Scan method
     bool scan()
@@ -157,87 +167,54 @@ public:
 
 class Floor : public Object
 {
+public:
+    Floor(float x, float y) : Object(x, y, 0) {}
+
+    bool isEven (int num) {
+        if (num % 2 == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }   
+    }
     bool hit(Ray &ray)
     {
+        if ()
+        {
+            /* code */
+        }
+        
         return true;
     }
 };
 
-class RayScanner
-{
+class RayScanner {
+        VPO objects{
+            new Floor(1,1),
+            new Sphere(-1.5, 0.8, 2.0, 0.8),
+            new Sphere(2.0, 0.3, 2.0, 0.3),
+            new Sphere(0.5, 1.0, 2.0, 0.5)
+        };
+        void scan () {
+        float yStep = (endPointA.y - endPointD.y)/amountRaysY;
+        for (float i = endPointA.y; i >= endPointC.y; i += yStep)        
+        {
+            float xStep = (endPointB.x - endPointA.x)/amountRaysX;
+            for (float j = endPointA.x; j <= endPointB.x; j += xStep)        
+            {
+                Ray ray(0, 0, objects);
+                ray.direction = 
+            }   
+        } 
+        
+    }
 };
 
 int main()
 {
-    // Constant variables for board and circle dimensions
-    const int boardWidth = 300;
-    const int boardHeight = 100;
-
-    const int middleX = boardWidth / 2;
-    const int middleY = boardHeight / 2;
-
-    const float horizon = 70;
-
-    const double outerRadius = 80.0;
-    const double innerRadius = 40.0;
-
-    // Characters to be printed
-    std::array<char, 3> chars = {' ', 'L', 'N'};
-
-    // Switcher to toggle the chessboard pattern
-    float tileHeight = 1;
-    float tileWidth = 30;
-    int switcher = 0;
-    int lastSwitcher = 1;
-    int count2Y = 0;
-    float count2X = 0;
-    int num;
-    int num2;
-
-    // print y line
-    for (int i = 0; i <= boardHeight; ++i)
-    {
-        switcher++;
-        if (i > horizon)
-        {
-            tileHeight = tileHeight + 0.2;
-            tileWidth += 0.5;
-        }
-        // ptint y tile
-        for (int j = 0; j < tileHeight; j++)
-        {
-            // switcher++;
-            i++;
-            // print x line
-            for (int k = 0; k <= boardWidth; k++)
-            {
-                if (k <= middleX)
-                {
-                    tileWidth--;
-                }
-                else if (k > middleX)
-                {
-                    tileWidth++;
-                }
-                switcher = (switcher + 1) % 2;
-                // print x tile
-                for (int l = 0; l < tileWidth; l++)
-                {
-                    if (i < horizon)
-                    {
-                        st::cout << chars[0];
-                        k++;
-                    }
-                    else if (i >= horizon)
-                    {
-                        std::cout << chars[switcher];
-                        k++;
-                    }
-                }
-            }
-            st::cout << st::endl;
-        }
-    }
 
     return 0;
 }

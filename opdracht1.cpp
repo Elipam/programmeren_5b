@@ -18,6 +18,8 @@
 #include <cmath>
 #include <array>
 
+using namespace std;
+
 int main()
 {
     // Constant variables for board and circle dimensions
@@ -34,7 +36,7 @@ int main()
     const double innerRadius = 40.0;
 
     // Characters to be printed
-    std::array<char, 3> chars = {' ', 'L', 'N'};
+    array<char, 3> chars = {' ', 'L', 'N'};
 
     // Switcher to toggle the chessboard pattern
     int switcher = 0;
@@ -44,31 +46,31 @@ int main()
     // Loop for the Y axis to generate rows
     for (int countY = 0; countY < boardHeight; countY++)
     {
-        num = std::floor(countY / tileHeight);
+        num = floor(countY / tileHeight);
         switcher = (num % 2 == 0) ? 1 : 0;
 
         // Loop for the X axis to generate columns
         for (int countX = 0; countX < boardWidth; countX++)
         {
             int character = 0;
-            num2 = std::floor(countX / tileWidthX) + switcher;
+            num2 = floor(countX / tileWidthX) + switcher;
             if (num2 % 2 == 0)
             {
                 character += 1;
             }
 
             // Calculate the distance from the center using Pythagoras
-            float pythagoras = std::sqrt((countX - middleX) * (countX - middleX) + 7 * (countY - middleY) * (countY - middleY));
+            float pythagoras = sqrt((countX - middleX) * (countX - middleX) + 7 * (countY - middleY) * (countY - middleY));
             if (pythagoras <= outerRadius && pythagoras >= innerRadius)
             {
                 character += 1;
             }
 
             // Output the corresponding character
-            std::cout << chars[character];
+            cout << chars[character];
         }
         // Newline at the end of each row
-        std::cout << std::endl;
+        cout << endl;
     }
 
     return 0;
