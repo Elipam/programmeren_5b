@@ -241,7 +241,7 @@ public:
         float t = (this->y - ray.support.y) / ray.direction.y;
         Vec3D hitPoint = ray.support.add(ray.direction.mul(t));
 
-        if (ray.direction.y >= 0 || hitPoint.z > 3)
+        if (ray.direction.y >= 0 || hitPoint.z > zVoid)
         {
             return false;
         }

@@ -23,8 +23,8 @@ using namespace std;
 int main()
 {
     // Constant variables for board and circle dimensions
-    const int boardWidth = 300;
-    const int boardHeight = 100;
+    const int boardWidth = 240;
+    const int boardHeight = 80;
 
     const int middleX = boardWidth / 2;
     const int middleY = boardHeight / 2;

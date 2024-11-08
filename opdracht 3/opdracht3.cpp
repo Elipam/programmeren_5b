@@ -153,7 +153,7 @@ public:
     // Check if the ray hits the sphere
     bool hit(Ray const &ray) const
     {
-        if (distFromRay(ray) < radius)
+        if (distFromRay(ray) <= radius)
         {
             return true;
         }

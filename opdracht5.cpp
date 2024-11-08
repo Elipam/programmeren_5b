@@ -160,17 +160,18 @@ public:
     Vec3D support;
     Vec3D direction;
     VPO &objects;
+    float hitSomething;
 
     // Constructor
-    Ray(float xStart, float yStart, VPO &objects)
-        : support(xStart, yStart, -3), direction(0, 0, 0), objects(objects) {}
+    Ray(float xStart, float yStart, VPO &objects, hitSomething)
+        : support(xStart, yStart, -3), direction(0, 0, 0), objects(objects),hitSomething {}
 
     // Scan method
     bool scan()
     {
         return true;
     }
-
+// make hitsomething
     float hitSomething = 0;
 
     void printChar()
