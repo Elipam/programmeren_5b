@@ -163,46 +163,41 @@ public:
     float hitSomething;
 
     // Constructor
-    Ray(float xStart, float yStart, VPO &objects, hitSomething)
-        : support(xStart, yStart, -3), direction(0, 0, 0), objects(objects),hitSomething {}
+    Ray(float xStart, float yStart, VPO &objects, int hitSomething)
+        : support(xStart, yStart, -3), direction(0, 0, 0), objects(objects), hitSomething(hitSomething) {}
 
     // Scan method
     bool scan()
     {
         return true;
     }
-// make hitsomething
-    float hitSomething = 0;
-
     void printChar()
     {
-        if (hitSomething >= 2)
-        {
-            cout << "##";
-            return;
-        }
         for (const auto &obj : objects)
         {
-            if (obj->hit(*this))
+            if (obj->hit(*this) && hitSomething < 3)
             {
                 hitSomething++;
                 Ray rayBounce = obj->bounce(*this);
                 rayBounce.printChar();
             }
+            else {
+                if (hitSomething >= 2)
+                {
+                    cout << "##";
+                }
+                else if (hitSomething == 1)
+                {
+                    cout << "++";
+                }
+                else
+                {
+                    cout << "  ";
+                }
+            }
+            return;
         }
 
-        if (hitSomething >= 2)
-        {
-            cout << "##";
-        }
-        else if (hitSomething == 1)
-        {
-            cout << "++";
-        }
-        else
-        {
-            cout << "  ";
-        }
     }
 };
 
@@ -264,7 +259,7 @@ public:
         Vec3D hitPoint = this->hitPoint(ray);
         Vec3D normal = hitPoint.sub(center).unit();
         Vec3D reflectedDir = ray.direction.sub(normal.mul(2 * ray.direction.dot(normal))).unit();
-        Ray ray2(0, 0, ray.objects);
+        Ray ray2(0, 0, ray.objects, ray.hitSomething);
         ray2.direction = reflectedDir;
         ray2.support = hitPoint;
         return ray2;
@@ -307,7 +302,7 @@ public:
     {
         float t = (this->y - ray.support.y) / ray.direction.y;
         Vec3D hitPoint = ray.support.add(ray.direction.mul(t));
-        Ray ray2 = Ray(0, 0, ray.objects);
+        Ray ray2 = Ray(0, 0, ray.objects, ray.hitSomething);
         ray.direction.z = minus2(ray.direction.z);
         ray2.direction = ray.direction;
         ray2.support = hitPoint;
@@ -333,7 +328,7 @@ public:
         {
             for (float j = endPointA.x; j <= endPointB.x; j += xStep)
             {
-                Ray ray(0, 1, objects);
+                Ray ray(0, 1, objects, 0);
                 ray.direction = Vec3D(j, i, zVoid).sub(ray.support).unit();
                 ray.hitSomething = 0;
                 ray.printChar();
